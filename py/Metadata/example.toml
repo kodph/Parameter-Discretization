@@ -1,0 +1,28 @@
+title = "Carmaker_test.0"
+
+[properties]
+path = ""
+parameters = ""
+time = ""
+
+[results]
+
+    [results.IPGresult]
+    name = ""
+    path = ""
+
+    [results.IPGpng]
+    name = ""
+    path = ""
+
+[previous_grid_01]
+path = ""
+name = ""
+parameters = ""
+time = ""
+
+[previous_grid_02]
+path = ""
+name = ""
+parameters = ""
+time = ""

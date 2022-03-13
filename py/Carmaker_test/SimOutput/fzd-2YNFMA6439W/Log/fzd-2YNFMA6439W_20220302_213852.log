@@ -1,0 +1,15 @@
+APPLICATION	CarMaker 10.0 - Car_Generic #603 (win64-10.0)
+COMPILED	fh@obelix.ipg 2021-04-01 16:39:49
+ 
+FIRST_INIT	(internal default used)	2022-03-02 21:38:52
+TIME	0.000
+SIM_END			0s	0m
+IDLE	21:38:53
+SIM_START	C:\HiWi\parameter-discretization\Carmaker_test\Data\TestRun\Carmaker_test_2022-3-2-18-43\Carmaker_test.7	2022-03-02 21:38:53
+TIME	0.000
+SIMULATE	C:\HiWi\parameter-discretization\Carmaker_test\Data\TestRun\Carmaker_test_2022-3-2-18-43\Carmaker_test.7
+
+TIME	43.081
+SIM_END		C:\HiWi\parameter-discretization\Carmaker_test\Data\TestRun\Carmaker_test_2022-3-2-18-43\Carmaker_test.7	43.072s	856.438m
+SHUTDOWN	CarMaker shutdown and system halt initiated
+

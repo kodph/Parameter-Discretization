@@ -1,0 +1,42 @@
+APPLICATION	CarMaker 10.0 - Car_Generic #603 (win64-10.0)
+COMPILED	fh@obelix.ipg 2021-04-01 16:39:49
+ 
+FIRST_INIT	(internal default used)	2022-03-13 15:55:42
+TIME	0.000
+SIM_END			0s	0m
+IDLE	15:55:43
+SIM_START	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	2022-03-13 15:55:45
+TIME	0.000
+SIMULATE	Carmaker_test_2022-3-13-15-50/Carmaker_test.0
+
+TIME	43.081
+SIM_END		Carmaker_test_2022-3-13-15-50/Carmaker_test.0	43.072s	856.438m
+TIME	55.275
+SIM_START	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	2022-03-13 15:57:51
+TIME	0.000
+SIMULATE	Carmaker_test_2022-3-13-15-50/Carmaker_test.0
+
+TIME	43.081
+SIM_END		Carmaker_test_2022-3-13-15-50/Carmaker_test.0	43.072s	856.438m
+TIME	49.612
+SIM_START	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	2022-03-13 15:58:59
+TIME	49.612
+ERROR		Testrun file doesn't exist, file 'Carmaker_test_2022-3-13-15-50/Carmaker_test.0'
+TIME	0.004
+SIM_ABORT	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	0s	856.438m
+SIM_START	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	2022-03-13 15:59:08
+TIME	0.827
+ERROR		Testrun file doesn't exist, file 'Carmaker_test_2022-3-13-15-50/Carmaker_test.0'
+ERROR		DStore Format 'erg' doesn't support multiple channels
+ERROR		DStore: Failed to add a channel.
+TIME	0.003
+SIM_ABORT	Carmaker_test_2022-3-13-15-50/Carmaker_test.0	0s	856.438m
+SIM_START	Carmaker_test	2022-03-13 15:59:23
+TIME	0.000
+SIMULATE	Carmaker_test
+
+TIME	43.081
+SIM_END		Carmaker_test	43.072s	856.438m
+TIME	48.026
+SHUTDOWN	CarMaker quick shutdown initiated
+
