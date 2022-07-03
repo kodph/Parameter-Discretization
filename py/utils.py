@@ -17,7 +17,7 @@ class RandomList():
         return [self._list[x] for x in self.dist.rvs(n)]
 
 
-def create_path(pattern, original_file_path, id, date):
+def create_path(pattern, original_file_path, id, date, grid_ID):
     file_name, extension = os.path.splitext(os.path.basename(original_file_path))
     path = os.path.dirname(original_file_path)
     pattern = pattern.replace('%y', str(date.year))
@@ -30,5 +30,7 @@ def create_path(pattern, original_file_path, id, date):
     pattern = pattern.replace('%e', extension)
     pattern = pattern.replace('%p', path)
     pattern = pattern.replace('%f', file_name)
+    pattern = pattern.replace('%g', str(grid_ID))
     pattern = pattern.replace('%/', os.path.sep)
     return os.path.abspath(pattern)
+

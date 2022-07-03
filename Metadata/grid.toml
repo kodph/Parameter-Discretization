@@ -1,0 +1,18 @@
+title = "grid03.toml"
+
+[properties]
+parameters = [ "Traffic.0.Init.Road[0]",]
+time = "2022-05-26 13:11:40.468944"
+
+[instances]
+"[50.0]" = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\\\instances\\\\[50.0].toml"
+"[50.25]" = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\\\instances\\\\[50.25].toml"
+"[50.5]" = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\\\instances\\\\[50.5].toml"
+"[50.75]" = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\\\instances\\\\[50.75].toml"
+"[51.0]" = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\\\instances\\\\[51.0].toml"
+
+[evaluation]
+p = [ 0.9149495002804603, -1.801621997414818,]
+GCI = [ 0.01530042189180896, -0.1142171817163532,]
+p_sum = 0.4364723329641343
+points_x = [ 50.25, 50.75,]

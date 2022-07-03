@@ -7,9 +7,9 @@ import copy
 class FastDiscretizer(Basediscretizer):
 
     @classmethod
-    def _discrete(cls, params):
+    def _discrete(cls, params, discrete_params):
         problem = create_discrete_problem(params)
-        param_values = create_param_values(problem)
+        param_values = create_param_values(problem, discrete_params)
         params_list = []
         for params in param_values:
             discreted_params = {xpath: param for xpath, param in zip(problem['names'], params)}
@@ -26,13 +26,14 @@ def create_discrete_problem(params):
     for xpath, value in params.items():
         problem['num_vars'] += 1
         problem['names'].append(xpath)
-        problem['bounds'].append([value[0], value[1], int(value[2])])
+        problem['bounds'].append([value[0], value[1]])
     return problem
 
-def create_param_values(problem):
+def create_param_values(problem, discrete_params):
     param_values = []
-    for i, bound in enumerate(problem['bounds']):
-        aa = np.linspace(bound[0],bound[1],bound[2])
+    for i, (bound, discrete_param) in enumerate(zip(problem['bounds'], discrete_params)):
+        aa = np.linspace(bound[0],bound[1], discrete_param)
+        aa = list(map(float, aa))
         if i == 0:
             for item1 in aa:
                 param_values.append([item1])

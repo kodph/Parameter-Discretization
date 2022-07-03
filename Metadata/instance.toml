@@ -1,0 +1,24 @@
+title = "[50.0].toml"
+
+[properties]
+path = "C:\\Arbeit\\Carmaker_test\\Data\\TestRun\\Test526\\test_distance_2022-5-26-13-10_1\\test_distance.0"
+parameter_cb = [ 50.0,]
+parameters_amout = 1
+parameter_01 = "Traffic.0.Init.Road[0]"
+parameter_01_input = [ 50.0, 51.0,]
+time = "2022-05-26 13:10:21.102795"
+ipg_result = 1
+yolo_result = 1
+sc_result = 1
+
+[results]
+ipgmovie = "C:/Arbeit/Carmaker_test/png/Test526\\test_distance_2022-5-26-13-10_1\\test_distance.0.png"
+yolov5 = "C:/Arbeit/Carmaker_test/png/Test526\\test_distance_2022-5-26-13-10_1\\exp\\labels\\test_distance.0.txt"
+safetyscore = "0.6426782138620587"
+
+[results.ipgresult]
+Time = "0.9900000000000008"
+"Traffic.T00.tx" = "50.0"
+"Traffic.T00.ty" = "0.0"
+"Traffic.T00.tz" = "0.83"
+"$none$" = []

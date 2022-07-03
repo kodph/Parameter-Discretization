@@ -29,10 +29,18 @@ class CarMakerHandler(BaseHandler):
     def write_data(self, path):
         with open(path, 'w') as testrun_file:
             testrun_file.write(self.data['#INFOFILE_HEADER'])
+            indentation = False  # This line is added by Para.Dis. Add indentation to the testrun file where it is needed.
             for k, v in self.data.items():
+                if indentation == True:
+                    testrun_file.write('\t')
+                    _write_single_line(k, v, testrun_file)
+                    indentation = False
+                    continue
                 if k == '#INFOFILE_HEADER':
                     continue
                 if type(v) is list and len(v):
+                    if v == [[]]:
+                        indentation = True
                     if type(v[0]) is list:
                         _write_multirow_line(k, v, testrun_file)
                     else:

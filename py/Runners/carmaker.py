@@ -1,6 +1,7 @@
 import os
 import socket
 import time
+import toml
 from .base import BaseRunner
 from third_party.cmerg.erg import  ERG
 
@@ -22,12 +23,14 @@ class CarMakerRunner(BaseRunner):
                 -10:'Starting application',
                 -11:'Simulink initialization'}
 
-    def __init__(self, project_path,executable_path=None, keep_alive=False, convert_results=True, log_level=0):
+    def __init__(self, executable_path=None, keep_alive=False, convert_results=True, log_level=0):
         super().__init__()
 
         # define aliases for standard methods
         self.simulate_testrun = self._evaluate_instance
         self.simulate_testruns = self._evaluate_instances
+        self.simulate_movies = self._evaluate_movies
+        self.simulate_movie = self._evaluate_movie
 
         if executable_path:
             self._executable_path = executable_path
@@ -40,7 +43,6 @@ class CarMakerRunner(BaseRunner):
         self._keep_alive = keep_alive
         self._convert_results = convert_results
         self._log_level = log_level
-        self._project_path = project_path
         if self._keep_alive:
             self.startup() # start runner at init, since it should never be shut down
 
@@ -66,7 +68,7 @@ class CarMakerRunner(BaseRunner):
         return reply
 
     def startup(self):
-        executable_cmd = f'{self._executable_path} -cmdport {self._tcp_cmd_port}'
+        executable_cmd = f'{self._executable_path} -cmdport {self._tcp_cmd_port} -apphost localhost' # use localhost
         if self._log_level <= 1:
             print(f'Executing: {executable_cmd}')
         os.system(executable_cmd)
@@ -128,67 +130,65 @@ class CarMakerRunner(BaseRunner):
         testrun_paths = [os.path.join(testrun_dir_path, entry) for entry in dir_entries]
         erg_paths = self.simulate_testruns(testrun_paths, out_quants, mode)
         return erg_paths
-    
-    def generate_results(self, testrun_dir_path, mode='save_all'):
-        dir_entries = os.listdir(testrun_dir_path)
-        testrun_paths = [os.path.join(testrun_dir_path, entry) for entry in dir_entries]
-        erg_paths = []
-        for testrun_path in testrun_paths:
-            erg_path = self.generate_result(testrun_path, mode)
-            erg_paths.append(erg_path)
-        return erg_paths
 
-    # added only for simulate results. And these results are appropriate for generate IPGmovies. 
-    def generate_result(self, testrun_path, mode='save_all'):
+    # added for simulate movies.
+    def _evaluate_movie(self, testrun_path, out_quants, camera_name='Dev_Xu', mode='save_all'):
         if not self._keep_alive: # assume that runner is shut down at this point, TODO: needs check to see if runner ist really shut down
             self.startup()
-        
-        ipgmovie_quants = ['Vhcl.Distance', 'Vhcl.Engine.rotv', 'Vhcl.FL.Fx', 'Vhcl.FL.Fy', 'Vhcl.FL.Fz', 'Vhcl.FL.LongSlip', 'Vhcl.FL.rot', 'Vhcl.FL.rotv', 'Vhcl.FL.rx', 'Vhcl.FL.ry', 'Vhcl.FL.rz', 'Vhcl.FL.SideSlip', 'Vhcl.FL.Trq_B2WC', 'Vhcl.FL.Trq_Brake', 'Vhcl.FL.Trq_DL2WC', 'Vhcl.FL.Trq_Drive', 'Vhcl.FL.Trq_T2W', 'Vhcl.FL.Trq_WhlBearing', 'Vhcl.FL.tx', 'Vhcl.FL.ty', 'Vhcl.FL.tz', 'Vhcl.FL.vBelt', 'Vhcl.FR.Fx', 'Vhcl.FR.Fy', 'Vhcl.FR.Fz', 'Vhcl.FR.LongSlip', 'Vhcl.FR.rot', 'Vhcl.FR.rotv', 'Vhcl.FR.rx', 'Vhcl.FR.ry', 'Vhcl.FR.rz', 'Vhcl.FR.SideSlip', 'Vhcl.FR.Trq_B2WC', 'Vhcl.FR.Trq_Brake', 'Vhcl.FR.Trq_DL2WC', 'Vhcl.FR.Trq_Drive', 'Vhcl.FR.Trq_T2W', 'Vhcl.FR.Trq_WhlBearing', 'Vhcl.FR.tx', 'Vhcl.FR.ty', 'Vhcl.FR.tz', 'Vhcl.FR.vBelt', 'Vhcl.Fr1.x', 'Vhcl.Fr1.y', 'Vhcl.Fr1.z', 'Vhcl.Fr1B.rx', 'Vhcl.Fr1B.ry', 'Vhcl.GearNo', 'Vhcl.Hitch.x', 'Vhcl.Hitch.y', 'Vhcl.Hitch.z', 'Vhcl.Ignition', 'Vhcl.OperationError', 'Vhcl.OperationState', 'Vhcl.Pitch', 'Vhcl.PitchAcc', 'Vhcl.PitchVel', 'Vhcl.PoI.ax', 'Vhcl.PoI.ax_1', 'Vhcl.PoI.ay', 'Vhcl.PoI.ay_1', 'Vhcl.PoI.az', 'Vhcl.PoI.az_1', 'Vhcl.PoI.GCS.Elev', 'Vhcl.PoI.GCS.Lat', 'Vhcl.PoI.GCS.Long', 'Vhcl.PoI.vx', 'Vhcl.PoI.vx_1', 'Vhcl.PoI.vy', 'Vhcl.PoI.vy_1', 'Vhcl.PoI.vz', 'Vhcl.PoI.vz_1', 'Vhcl.PoI.x', 'Vhcl.PoI.y', 'Vhcl.PoI.z', 'Vhcl.RL.Fx', 'Vhcl.RL.FxTwin', 'Vhcl.RL.Fy', 'Vhcl.RL.FyTwin', 'Vhcl.RL.Fz', 'Vhcl.RL.FzTwin', 'Vhcl.RL.LongSlip', 'Vhcl.RL.rot', 'Vhcl.RL.rotv', 'Vhcl.RL.rx', 'Vhcl.RL.ry', 'Vhcl.RL.rz', 'Vhcl.RL.SideSlip', 'Vhcl.RL.Trq_B2WC', 'Vhcl.RL.Trq_Brake', 'Vhcl.RL.Trq_DL2WC', 'Vhcl.RL.Trq_Drive', 'Vhcl.RL.Trq_T2W', 'Vhcl.RL.Trq_WhlBearing', 'Vhcl.RL.tx', 'Vhcl.RL.ty', 'Vhcl.RL.tz', 'Vhcl.RL.vBelt', 'Vhcl.Road.JuncObjId', 'Vhcl.Road.LinkObjId', 'Vhcl.Road.nextJuncObjId', 'Vhcl.Road.onJunction', 'Vhcl.Road.s2lastJunc', 'Vhcl.Road.s2nextJunc', 'Vhcl.Roll', 'Vhcl.RollAcc', 'Vhcl.RollVel', 'Vhcl.RR.Fx', 'Vhcl.RR.FxTwin', 'Vhcl.RR.Fy', 'Vhcl.RR.FyTwin', 'Vhcl.RR.Fz', 'Vhcl.RR.FzTwin', 'Vhcl.RR.LongSlip', 'Vhcl.RR.rot', 'Vhcl.RR.rotv', 'Vhcl.RR.rx', 'Vhcl.RR.ry', 'Vhcl.RR.rz', 'Vhcl.RR.SideSlip', 'Vhcl.RR.Trq_B2WC', 'Vhcl.RR.Trq_Brake', 'Vhcl.RR.Trq_DL2WC', 'Vhcl.RR.Trq_Drive', 'Vhcl.RR.Trq_T2W', 'Vhcl.RR.Trq_WhlBearing', 'Vhcl.RR.tx', 'Vhcl.RR.ty', 'Vhcl.RR.tz', 'Vhcl.RR.vBelt', 'Vhcl.sRoad', 'Vhcl.Steer.Acc', 'Vhcl.Steer.Ang', 'Vhcl.Steer.Trq', 'Vhcl.Steer.Vel', 'Vhcl.tRoad', 'Vhcl.v', 'Vhcl.Wind.vx', 'Vhcl.Wind.vy', 'Vhcl.Wind.vz', 'Vhcl.Yaw', 'Vhcl.YawAcc', 'Vhcl.YawRate']
-        _, testrun_path = testrun_path.split('TestRun\\')
+        _, testrun_basepath = testrun_path.split('TestRun\\')
         self.loadtestrun(testrun_path.replace('\\','\\\\')) #quick and dirty hack for the above problem
-        self.outquantsadd(ipgmovie_quants)
         self.savemode(mode)
-        #self.setresultfname('%o/%r/%D/%f_%T%?_s')# default is %t instead of %f. %t uses the whole source file path, with is unreadable
-        self.startsim()
-        try:
-            self.waitforstatus_running(10000)
-            self.waitforstatus_idle()
-            erg_path = self.getlastresultfname()
-            erg_path = os.path.join(self.project_path, erg_path)
-            #if self._convert_results:
-                #erg = ERG(erg_path)
-                #simulation_result = {signal_name: signal.data for signal_name, signal in erg.signals.items()}
-        except BaseException as E:
-            simulation_result = None
-        finally:
-            if not self._keep_alive:
-                if self._log_level <= 1:
-                    print('quit')
-                self.application_shutdown()
-                self.gui_quit()
-            return erg_path
-    
-    def generate_movies(self, testrun_dir_path, mode='save_all'):
-        erg_paths = self.generate_results(testrun_dir_path, mode)
-        testrun_dir_path = testrun_dir_path.split('\\')
-        dir_path = testrun_dir_path[-1] # Get the folder name of the test instances
-        if not self._keep_alive: # assume that runner is shut down at this point, TODO: needs check to see if runner ist really shut down
-            self.startup()
         self.movie_start()
-        for i, erg_path in enumerate(erg_paths):
-            erg_path = erg_path.replace('/','\\\\')
-            erg_path = erg_path.replace('\\','\\\\')
-            self.movie_loadsimdata(erg_path)
-            if not os.path.exists(f'{self._project_path}/png'):
-                os.mkdir(f'{self._project_path}/png')
-            if not os.path.exists(f'{self._project_path}/png/{dir_path}'):
-                os.mkdir(f'{self._project_path}/png/{dir_path}')
-            self.movie_export(f'{self._project_path}/png/{dir_path}/test{i:02}.png', 0, 0.05, 0.05)
+        for _ in range(1000000): # make sure the IPGmovie is running
+            if self.movie_attach() == 1:
+                break
+        self.select_camera(camera_name)
+        self.outquantsdelall()
+        self.outquantsadd(out_quants)
+        self.setresultfname('%o/%r/%D/%f_%T%?_s')# default is %t instead of %f. %t uses the whole source file path, with is unreadable
+        self.startsim()
+
+        self.waitforstatus_running(10000)
+        self.waitforstatus_idle()
+            # evaluate movie
+        if not os.path.exists(f'{self.project_path}/png'):
+            os.mkdir(f'{self.project_path}/png')
+        movie_path = f'{self.project_path}/png/{testrun_basepath}.png'
+        self.png_export(movie_path, 0, 'end', 'end')
+            
+            # evaluate result
+        erg_path = self.getlastresultfname()
+        erg_path = os.path.join(self.project_path,erg_path)
+        if self._convert_results:
+            erg = ERG(erg_path)
+            simulation_result = {signal_name: signal.data for signal_name, signal in erg.signals.items()}
+
+        if not self._keep_alive:
             if self._log_level <= 1:
-                print(f'png{i:02} saved')
-        self.gui_quit()
-        pass    
-   
+                print('quit')
+            self.application_shutdown()
+            self.gui_quit()
+        return movie_path, simulation_result
+    
+    def _evaluate_movies(self, grid_path, out_quants=['Vhcl.Fr1.x', 'Vhcl.Fr1.y','Vhcl.Fr1.z'], camera_name='Dev_Xu', mode='save_all'):
+        with open(grid_path) as toml_file:
+            grid = toml.load(toml_file)
+            for key, value in grid['instances'].items():
+                with open(value, 'r') as toml_file:
+                    instance = toml.load(toml_file)
+                with open(value, 'w') as toml_file:
+                    try:
+                        if instance['properties']['ipg_result'] == 0:
+                            testrun_path = instance['properties']['path']
+                            results = self._evaluate_movie(testrun_path, out_quants, camera_name, mode)
+                            instance['results']['ipgmovie'] = results[0]
+                            instance['results']['ipgresult'] = {key.replace('""',''): value[-1] for key,value in results[1].items()}
+                            instance['properties']['ipg_result'] = 1
+                        toml.dump(instance, toml_file)
+                    except:
+                        # Indicate which metadata is being modified when the program is interrupted
+                        raise ValueError('this instance metadata ' + str(value) + ' is damaged') 
+                    
     def startsim(self):
         self._send_command(f'StartSim')
 
@@ -261,22 +261,32 @@ class CarMakerRunner(BaseRunner):
     def popupctrl_timeout(self, timeout='-1'):
         self._send_command(f'PopupCtrl timeout {timeout}')
 
-# added for send command movie
+    # added for send command for IPGmovie
     def movie_start(self):
         self._send_command(f'Movie start')
 
     def movie_loadsimdata(self, erg_file_path, options=None):
         self._send_command(f'Movie loadsimdata {erg_file_path} {options}')
     
-    def movie_export(self, movie_path, windowId, starttime, endtime):
+    def png_export(self, movie_path, windowId, starttime, endtime):
         movie_path = movie_path.replace('\\', '\\\\')
         movie_path = movie_path.replace('/', '\\\\')
         movie_path = movie_path.replace("'","\"")
         self._send_command(f'Movie export window {movie_path} {windowId} -start {starttime} -end {endtime}')
     
-    def movie_attach(self):
-        self._send_command(f'Movie attach')
+    def movie_export(self, movie_path, windowId):
+        movie_path = movie_path.replace('\\', '\\\\')
+        movie_path = movie_path.replace('/', '\\\\')
+        movie_path = movie_path.replace("'","\"")
+        self._send_command(f'Movie export window {movie_path} {windowId}')
 
+    def movie_attach(self):
+        movie_attach = int(self._send_command(f'Movie attach'))
+        return movie_attach
+
+    def select_camera(self, camera_name):
+        self._send_command(f'Movie camera select ' + camera_name)
+    
  
 # cm = CarMakerRunner()
 # print(cm.projectinfo_path())
